@@ -75,5 +75,21 @@ public class Main {
         Map<String, Long> countStudentByClass = students.stream().collect(Collectors.groupingBy(Student::getClassName, Collectors.counting()));
         Map<GenderEnum, Optional<Student>> maxAgeByGender = students.stream().collect(Collectors.groupingBy(Student::getGender, Collectors.maxBy(Comparator.comparing(Student::getAge))));
         Map<GenderEnum, Student> maxAgeByGenderTwo = students.stream().collect(Collectors.groupingBy(Student::getGender, Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Student::getAge)), Optional::get)));
+        Map<GenderEnum, Set<StudentType>> groupAndMappingStudent = students.stream().collect(Collectors.groupingBy(Student::getGender,
+                Collectors.mapping(Student::getType, Collectors.toSet())));
+        Map<String, Set<HeightEnum>> groupAndMappingStudent2 = students.stream().collect(Collectors.groupingBy(Student::getClassName, Collectors.mapping(
+                student -> {
+                    if (student.getSort() < 3) return HeightEnum.SHORT;
+                    else if (student.getSort() < 6) return HeightEnum.CENTER;
+                    else return HeightEnum.TALL;
+                }, Collectors.toCollection(HashSet::new))));
+
+        Map<Boolean, List<Student>> partitionStudent = students.stream().collect(Collectors.partitioningBy(Student::isGoodStudent));
+
+        Map<Boolean, Map<String, List<Student>>> partitionAndGroupStudent = students.stream().collect(Collectors.partitioningBy(Student::isGoodStudent,
+                Collectors.groupingBy(Student::getClassName)));
+        long sum = LongStream.rangeClosed(0, 10000000).parallel().reduce(0L, Long::sum);
+
+
     }
 }

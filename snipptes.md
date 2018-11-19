@@ -106,6 +106,8 @@ Optional<Student> maxAgeStudent = students.stream().max(Comparator.comparing(Stu
 
 ```java
 Optional<Student> maxByAgeStudent = students.stream().collect(Collectors.maxBy(Comparator.comparing(Student::getAge)));
+
+int maxAge1 = students.stream().mapToInt(Student::getAge).max().orElse(0);
 ```
 
 ## min
@@ -166,6 +168,8 @@ for (Student s : students) {
 ```java
 Map<GenderEnum, List<Student>> groupStudentByGender = students.stream().collect(Collectors.groupingBy(Student::getGender));
 
+Map<String, List<Student>> groupByClassUseLinkedHashMap = students.stream().collect(Collectors.groupingBy(Student::getClassName, LinkedHashMap::new, Collectors.toList()));
+
  Map<String, List<Student>> groupStudentAndTwo = students.stream().collect(Collectors.groupingBy(student -> {
             if (student.getAge() < 11) return "le11";
             else if (student.getAge() == 11) return "eq11";
@@ -213,4 +217,32 @@ int totalAgeByReduceing = students.stream().collect(Collectors.reducing(0, Stude
 ```java
 Map<GenderEnum, Student> maxAgeByGenderTwo = students.stream().collect(Collectors.groupingBy(Student::getGender, Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Student::getAge)), Optional::get)));
 
+```
+
+## mapping
+
+```java
+Map<GenderEnum, Set<StudentType>> groupAndMappingStudent = students.stream().collect(Collectors.groupingBy(Student::getGender, Collectors.mapping(Student::getType, Collectors.toSet())));
+
+Map<String, Set<HeightEnum>> groupAndMappingStudent2 = students.stream().collect(Collectors.groupingBy(Student::getClassName, Collectors.mapping(
+                student -> {
+                    if (student.getSort() < 3) return HeightEnum.SHORT;
+                    else if (student.getSort() < 6) return HeightEnum.CENTER;
+                    else return HeightEnum.TALL;
+                }, Collectors.toCollection(HashSet::new))));
+```
+
+## partitioningBy
+
+```java
+Map<Boolean, List<Student>> partitionStudent = students.stream().collect(Collectors.partitioningBy(Student::isGoodStudent));
+
+Map<Boolean, Map<String, List<Student>>> partitionAndGroupStudent = students.stream().collect(Collectors.partitioningBy(Student::isGoodStudent,
+                Collectors.groupingBy(Student::getClassName)));
+```
+
+## parallel
+
+```java
+long sum = LongStream.rangeClosed(0, 10000000).parallel().reduce(0L, Long::sum);
 ```
